@@ -1,14 +1,16 @@
 #[cfg(not(feature="slice-ring-buffer"))]
-use std::{collections::{VecDeque}};
+use std::collections::VecDeque;
+#[cfg(not(feature="slice-ring-buffer"))]
+type BaseDequeImplementation<T> = VecDeque<T>;
 
 #[cfg(feature="slice-ring-buffer")]
 use slice_ring_buffer::SliceRingBuffer;
 #[cfg(feature="slice-ring-buffer")]
-type VecDeque<T> = SliceRingBuffer<T>;
+type BaseDequeImplementation<T> = SliceRingBuffer<T>;
 
 #[derive(Debug, Clone)]
 pub struct RingBuffer<T> {
-    inner: VecDeque<T>,
+    inner: BaseDequeImplementation<T>,
     capacity: usize,
     length: usize
 }
@@ -16,7 +18,7 @@ pub struct RingBuffer<T> {
 impl <T> RingBuffer<T> where T: Clone {
     pub fn new(capacity: usize) -> Self {
         Self {
-            inner: VecDeque::with_capacity(capacity),
+            inner: BaseDequeImplementation::with_capacity(capacity),
             capacity,
             length: 0
         }
@@ -30,10 +32,10 @@ impl <T> RingBuffer<T> where T: Clone {
     pub fn capacity(&self) -> usize {
         self.capacity
     }
-    pub fn inner(&self) -> &VecDeque<T> {
+    pub fn inner(&self) -> &BaseDequeImplementation<T> {
         &self.inner
     }
-    pub fn inner_mut(&mut self) -> &mut VecDeque<T> {
+    pub fn inner_mut(&mut self) -> &mut BaseDequeImplementation<T> {
         &mut self.inner
     }
     pub fn clear(&mut self) {
@@ -150,12 +152,12 @@ impl <T> RingBuffer<T> where T: Clone {
 }
 
 pub trait ChunkedBuffer<T> where T: Clone {
-    fn buffer_back(&mut self, item: T) -> Option<VecDeque<T>>;
-    fn buffer_front(&mut self, item: T) -> Option<VecDeque<T>>;
+    fn buffer_back(&mut self, item: T) -> Option<BaseDequeImplementation<T>>;
+    fn buffer_front(&mut self, item: T) -> Option<BaseDequeImplementation<T>>;
 }
 
 impl<T> ChunkedBuffer<T> for RingBuffer<T> where T: Clone {
-    fn buffer_back(&mut self, item: T) -> Option<VecDeque<T>> {
+    fn buffer_back(&mut self, item: T) -> Option<BaseDequeImplementation<T>> {
         self.push_back(item);
         if self.length == self.capacity {
             let buf = self.inner.clone();
@@ -165,7 +167,7 @@ impl<T> ChunkedBuffer<T> for RingBuffer<T> where T: Clone {
             None
         }
     }
-    fn buffer_front(&mut self, item: T) -> Option<VecDeque<T>> {
+    fn buffer_front(&mut self, item: T) -> Option<BaseDequeImplementation<T>> {
         self.push_front(item);
         if self.length == self.capacity {
             let buf = self.inner.clone();
