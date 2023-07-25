@@ -19,7 +19,7 @@ pub struct RingBuffer<T> {
 
 impl<T> From<Vec<T>> for RingBuffer<T> where T: Clone {
     fn from(value: Vec<T>) -> Self {
-        Self::from(BaseDequeImplementation::from(value))
+        Self::from(BaseDequeImplementation::from_iter(value.into_iter()))
     }
 }
 impl<T> From<BaseDequeImplementation<T>> for RingBuffer<T> where T: Clone {
