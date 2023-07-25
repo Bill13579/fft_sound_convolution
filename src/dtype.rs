@@ -1,3 +1,5 @@
+use std::ops::RangeBounds;
+
 #[cfg(not(feature="slice-ring-buffer"))]
 use std::collections::VecDeque;
 #[cfg(not(feature="slice-ring-buffer"))]
@@ -32,15 +34,39 @@ impl <T> RingBuffer<T> where T: Clone {
     pub fn capacity(&self) -> usize {
         self.capacity
     }
+    #[cfg(not(feature="slice-ring-buffer"))]
     pub fn inner(&self) -> &BaseDequeImplementation<T> {
         &self.inner
     }
+    #[cfg(feature="slice-ring-buffer")]
+    pub fn inner(&self) -> &[T] {
+        &self.inner
+    }
+    #[cfg(not(feature="slice-ring-buffer"))]
+    /// Note
+    /// ====
+    /// While this function exists in order to allow for complex operations that
+    ///  are not handled by the included utility functions, its use **can** cause
+    ///  the `RingBuffer` to become out of sync with its inner deque.
+    /// **To avoid that, do not modify the length of the inner deque directly without going
+    ///  through one of the utility functions!**
     pub fn inner_mut(&mut self) -> &mut BaseDequeImplementation<T> {
+        &mut self.inner
+    }
+    #[cfg(feature="slice-ring-buffer")]
+    pub fn inner_mut(&mut self) -> &mut [T] {
         &mut self.inner
     }
     pub fn clear(&mut self) {
         self.inner.clear();
         self.length = 0;
+    }
+    pub fn drain<R>(&mut self, range: R) -> Vec<T>
+    where
+        R: RangeBounds<usize> {
+        let drain: Vec<T> = self.inner.drain(range).collect();
+        self.length -= drain.len();
+        drain
     }
     pub fn empty(&mut self) -> Vec<T> {
         self.length = 0;
