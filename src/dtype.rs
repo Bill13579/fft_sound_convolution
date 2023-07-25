@@ -1,4 +1,10 @@
+#[cfg(not(feature="slice-ring-buffer"))]
 use std::{collections::{VecDeque}};
+
+#[cfg(feature="slice-ring-buffer")]
+use slice_ring_buffer::SliceRingBuffer;
+#[cfg(feature="slice-ring-buffer")]
+type VecDeque<T> = SliceRingBuffer<T>;
 
 #[derive(Debug, Clone)]
 pub struct RingBuffer<T> {
