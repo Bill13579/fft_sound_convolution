@@ -25,6 +25,9 @@ impl TrueStereoFFTConvolution {
             rl: FFTConvolution::new(ir_rl, window_size)
         }
     }
+    pub fn window_size(&self) -> usize {
+        self.ll.window_size()
+    }
     pub fn internal_buffer_size(&self) -> usize {
         self.ll.internal_buffer_size()
     }
@@ -52,6 +55,9 @@ impl StereoFFTConvolution {
             ll: FFTConvolution::new(ir_left, window_size),
             rr: FFTConvolution::new(ir_right, window_size)
         }
+    }
+    pub fn window_size(&self) -> usize {
+        self.ll.window_size()
     }
     pub fn internal_buffer_size(&self) -> usize {
         self.ll.internal_buffer_size()
@@ -98,6 +104,9 @@ impl FFTConvolution {
             ir_fft_cache,
             fft_planner,
         }
+    }
+    pub fn window_size(&self) -> usize {
+        self.window_size
     }
     pub fn output_buffer(&self) -> &RingBuffer<f64> {
         &self.out
