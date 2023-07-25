@@ -17,12 +17,30 @@ pub struct RingBuffer<T> {
     length: usize
 }
 
-impl <T> RingBuffer<T> where T: Clone {
+impl<T> From<Vec<T>> for RingBuffer<T> where T: Clone {
+    fn from(value: Vec<T>) -> Self {
+        Self::from(BaseDequeImplementation::from(value))
+    }
+}
+impl<T> From<BaseDequeImplementation<T>> for RingBuffer<T> where T: Clone {
+    fn from(value: BaseDequeImplementation<T>) -> Self {
+        Self::from_deque(value)
+    }
+}
+
+impl<T> RingBuffer<T> where T: Clone {
     pub fn new(capacity: usize) -> Self {
         Self {
             inner: BaseDequeImplementation::with_capacity(capacity),
             capacity,
             length: 0
+        }
+    }
+    pub fn from_deque(deque: BaseDequeImplementation<T>) -> RingBuffer<T> {
+        Self {
+            capacity: deque.len(),
+            length: deque.len(),
+            inner: deque
         }
     }
     pub fn len(&self) -> usize {
