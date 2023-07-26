@@ -8,7 +8,7 @@ type BaseDequeImplementation<T> = VecDeque<T>;
 #[cfg(feature="slice-ring-buffer")]
 use slice_ring_buffer::SliceRingBuffer;
 #[cfg(feature="slice-ring-buffer")]
-type BaseDequeImplementation<T> = SliceRingBuffer<T>;
+pub type BaseDequeImplementation<T> = SliceRingBuffer<T>;
 
 #[derive(Debug, Clone)]
 pub struct RingBuffer<T> {
