@@ -52,6 +52,9 @@ impl<T> RingBuffer<T> where T: Clone {
     pub fn capacity(&self) -> usize {
         self.capacity
     }
+    pub fn into_deque(self) -> BaseDequeImplementation<T> {
+        self.inner
+    }
     #[cfg(not(feature="slice-ring-buffer"))]
     pub fn inner(&self) -> &BaseDequeImplementation<T> {
         &self.inner
